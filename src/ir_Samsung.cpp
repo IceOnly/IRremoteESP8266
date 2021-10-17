@@ -281,7 +281,7 @@ IRSamsungAc::IRSamsungAc(const uint16_t pin, const bool inverted,
 void IRSamsungAc::stateReset(const bool forcepower, const bool initialPower) {
   static const uint8_t kReset[kSamsungAcExtendedStateLength] = {
       0x02, 0x92, 0x0F, 0x00, 0x00, 0x00, 0xF0,
-      0x01, 0x02, 0xAE, 0x71, 0x00, 0x15, 0xF0};
+      0x01, 0x02, 0xAE, 0x71, 0x00, 0x01, 0xF0};
   std::memcpy(_.raw, kReset, kSamsungAcExtendedStateLength);
   _forcepower = forcepower;
   _lastsentpowerstate = initialPower;
@@ -448,14 +448,14 @@ void IRSamsungAc::off(void) { setPower(false); }
 /// Change the power setting.
 /// @param[in] on true, the setting is on. false, the setting is off.
 void IRSamsungAc::setPower(const bool on) {
-  _.Power1 = !on;  // Cleared when on.
   _.Power6 = (on ? 0b11 : 0b00);
+  _.Power13 = (on ? 0b11 : 0b00);
 }
 
 /// Get the value of the current power setting.
 /// @return true, the setting is on. false, the setting is off.
 bool IRSamsungAc::getPower(void) const {
-  return (_.Power6 == 0b11) && !_.Power1;
+  return (_.Power6 == 0b11) && (_.Power13 == 0b11);
 }
 
 /// Set the temperature.
@@ -479,15 +479,6 @@ void IRSamsungAc::setMode(const uint8_t mode) {
   uint8_t newmode = mode;
   if (newmode > kSamsungAcHeat) newmode = kSamsungAcAuto;
   _.Mode = newmode;
-
-  // Auto mode has a special fan setting valid only in auto mode.
-  if (newmode == kSamsungAcAuto) {
-    _.Fan = kSamsungAcFanAuto2;
-  } else {
-    // Non-Auto can't have this fan setting
-    if (_.Fan == kSamsungAcFanAuto2)
-      _.Fan = kSamsungAcFanAuto;  // Default to something safe.
-  }
 }
 
 /// Get the operating mode setting of the A/C.
@@ -506,9 +497,6 @@ void IRSamsungAc::setFan(const uint8_t speed) {
     case kSamsungAcFanHigh:
     case kSamsungAcFanTurbo:
       if (_.Mode == kSamsungAcAuto) return;  // Not valid in Auto mode.
-      break;
-    case kSamsungAcFanAuto2:  // Special fan setting for when in Auto mode.
-      if (_.Mode != kSamsungAcAuto) return;
       break;
     default:
       return;
@@ -553,27 +541,25 @@ void IRSamsungAc::setBeep(const bool on) {
 /// Get the Clean setting of the A/C.
 /// @return true, the setting is on. false, the setting is off.
 bool IRSamsungAc::getClean(void) const {
-  return _.Clean10 && _.Clean11;
+  return _.Clean;
 }
 
 /// Set the Clean setting of the A/C.
 /// @param[in] on true, the setting is on. false, the setting is off.
 void IRSamsungAc::setClean(const bool on) {
-  _.Clean10 = on;
-  _.Clean11 = on;
+  _.Clean = on;
 }
 
 /// Get the Quiet setting of the A/C.
 /// @return true, the setting is on. false, the setting is off.
 bool IRSamsungAc::getQuiet(void) const {
-  return !_.Quiet1 && _.Quiet5;
+  return _.Quiet;
 }
 
 /// Set the Quiet setting of the A/C.
 /// @param[in] on true, the setting is on. false, the setting is off.
 void IRSamsungAc::setQuiet(const bool on) {
-  _.Quiet1 = !on;  // Cleared when on.
-  _.Quiet5 = on;
+  _.Quiet = on;
   if (on) {
     // Quiet mode seems to set fan speed to auto.
     setFan(kSamsungAcFanAuto);
@@ -744,7 +730,6 @@ String IRSamsungAc::toString(void) const {
   result += kSpaceLBraceStr;
   switch (_.Fan) {
     case kSamsungAcFanAuto:
-    case kSamsungAcFanAuto2:
       result += kAutoStr;
       break;
     case kSamsungAcFanLow:

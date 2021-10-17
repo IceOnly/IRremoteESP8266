@@ -46,14 +46,14 @@ union SamsungProtocol{
     uint8_t :8;
     // Byte 1
     uint8_t         :4;
-    uint8_t Quiet1  :1;
-    uint8_t Power1  :1;
+    uint8_t         :1;
+    uint8_t         :1;
     uint8_t         :2;
     // Byte 2~4
     uint8_t pad0[3];
     // Byte 5
     uint8_t         :5;
-    uint8_t Quiet5  :1;
+    uint8_t Quiet   :1;
     uint8_t         :2;
     // Byte 6
     uint8_t         :4;
@@ -72,10 +72,10 @@ union SamsungProtocol{
     uint8_t Powerful10  :3;
     uint8_t Display     :1;
     uint8_t             :2;
-    uint8_t Clean10     :1;
+    uint8_t             :1;
     // Byte 11
     uint8_t Ion     :1;
-    uint8_t Clean11 :1;
+    uint8_t Clean   :1;
     uint8_t         :2;
     uint8_t Temp    :4;
     // Byte 12
@@ -84,9 +84,11 @@ union SamsungProtocol{
     uint8_t Mode  :3;
     uint8_t       :1;
     // Byte 13
-    uint8_t       :1;
-    uint8_t Beep  :1;
-    uint8_t       :6;
+    uint8_t FilterReset :1;
+    uint8_t Beep        :1;
+    uint8_t             :2;
+    uint8_t Power13     :2;
+    uint8_t             :2;
   };
   struct {
     // 1st Section
@@ -163,7 +165,6 @@ const uint8_t kSamsungAcFanAuto = 0;
 const uint8_t kSamsungAcFanLow = 2;
 const uint8_t kSamsungAcFanMed = 4;
 const uint8_t kSamsungAcFanHigh = 5;
-const uint8_t kSamsungAcFanAuto2 = 6;
 const uint8_t kSamsungAcFanTurbo = 7;
 const uint16_t kSamsungAcSectionLength = 7;
 const uint64_t kSamsungAcPowerSection = 0x1D20F00000000;
