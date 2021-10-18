@@ -42,106 +42,76 @@
 union SamsungProtocol{
   uint8_t raw[kSamsungAcExtendedStateLength];  ///< State in code form.
   struct {
+    // 1st Section
     // Byte 0
-    uint8_t :8;
+    uint8_t             :8;
     // Byte 1
-    uint8_t         :4;
-    uint8_t Quiet1  :1;
-    uint8_t Power1  :1;
-    uint8_t         :2;
-    // Byte 2~4
-    uint8_t pad0[3];
+    uint8_t             :4;
+    uint8_t Sum1Lower   :4;
+    // Byte 2
+    uint8_t Sum1Upper   :4;
+    uint8_t             :4;
+    // Byte 3
+    uint8_t             :8;
+    // Byte 4
+    uint8_t             :8;
     // Byte 5
-    uint8_t         :5;
-    uint8_t Quiet5  :1;
-    uint8_t         :2;
+    uint8_t             :5;
+    uint8_t Quiet5      :1;
+    uint8_t             :2;
     // Byte 6
-    uint8_t         :4;
-    uint8_t Power6  :2;
-    uint8_t         :2;
+    uint8_t             :4;
+    uint8_t Power6      :2;
+    uint8_t             :2;
+
+    // 3rd Section
     // Byte 7
-    uint8_t :8;
+    uint8_t             :8;
     // Byte 8
-    uint8_t Powerful8 :8;
+    uint8_t             :4;
+    uint8_t Sum3Lower   :4;
     // Byte 9
-    uint8_t       :4;
-    uint8_t Swing :3;
-    uint8_t       :1;
+    uint8_t Sum3Upper   :4;
+    uint8_t             :4;
     // Byte 10
+    uint8_t             :8;
+    // Byte 11
+    uint8_t             :8;
+    // Byte 12
+    uint8_t             :8;
+    // Byte 13
+    uint8_t             :8;
+
+    // 3nd Section
+    // Byte 14
+    uint8_t :8;
+    // Byte 15
+    uint8_t Powerful8   :4;
+    uint8_t Sum3Lower   :4;
+    // Byte 16
+    uint8_t Sum3Upper   :4;
+    uint8_t Swing       :3;
+    uint8_t             :1;
+    // Byte 17
     uint8_t             :1;
     uint8_t Powerful10  :3;
     uint8_t Display     :1;
     uint8_t             :2;
     uint8_t Clean10     :1;
-    // Byte 11
-    uint8_t Ion     :1;
-    uint8_t Clean11 :1;
-    uint8_t         :2;
-    uint8_t Temp    :4;
-    // Byte 12
-    uint8_t       :1;
-    uint8_t Fan   :3;
-    uint8_t Mode  :3;
-    uint8_t       :1;
-    // Byte 13
-    uint8_t       :1;
-    uint8_t Beep  :1;
-    uint8_t       :6;
-  };
-  struct {
-    // 1st Section
-    // Byte 0
-    uint8_t           :8;
-    // Byte 1
-    uint8_t           :4;
-    uint8_t Sum1Lower :4;
-    // Byte 2
-    uint8_t Sum1Upper :4;
-    uint8_t           :4;
-    // Byte 3
-    uint8_t           :8;
-    // Byte 4
-    uint8_t           :8;
-    // Byte 5
-    uint8_t           :8;
-    // Byte 6
-    uint8_t           :8;
-    // 2nd Section
-    // Byte 7
-    uint8_t           :8;
-    // Byte 8
-    uint8_t           :4;
-    uint8_t Sum2Lower :4;
-    // Byte 9
-    uint8_t Sum2Upper :4;
-    uint8_t           :4;
-    // Byte 10
-    uint8_t           :1;
-    uint8_t Breeze    :3;  // WindFree
-    uint8_t           :4;
-    // Byte 11
-    uint8_t           :8;
-    // Byte 12
-    uint8_t           :8;
-    // Byte 13
-    uint8_t           :8;
-    // 3rd Section
-    // Byte 14
-    uint8_t           :8;
-    // Byte 15
-    uint8_t           :4;
-    uint8_t Sum3Lower :4;
-    // Byte 16
-    uint8_t Sum3Upper :4;
-    uint8_t           :4;
-    // Byte 17
-    uint8_t           :8;
     // Byte 18
-    uint8_t           :8;
+    uint8_t Ion         :1;
+    uint8_t Clean11     :1;
+    uint8_t             :2;
+    uint8_t Temp        :4;
     // Byte 19
-    uint8_t           :8;
+    uint8_t             :1;
+    uint8_t Fan         :3;
+    uint8_t Mode        :3;
+    uint8_t             :1;
     // Byte 20
-    uint8_t           :8;
+    uint8_t             :1;
+    uint8_t Beep        :1;
+    uint8_t             :6;
   };
 };
 
@@ -166,7 +136,6 @@ const uint8_t kSamsungAcFanHigh = 5;
 const uint8_t kSamsungAcFanAuto2 = 6;
 const uint8_t kSamsungAcFanTurbo = 7;
 const uint16_t kSamsungAcSectionLength = 7;
-const uint64_t kSamsungAcPowerSection = 0x1D20F00000000;
 
 // Classes
 /// Class for handling detailed Samsung A/C messages.
