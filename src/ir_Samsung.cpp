@@ -237,9 +237,9 @@ bool IRrecv::decodeSamsung36(decode_results *results, uint16_t offset,
 /// Status: Stable / Known working.
 /// @see https://github.com/crankyoldgit/IRremoteESP8266/issues/505
 /// @param[in] data The message to be sent.
-/// @param[in] shortMessage sends the short version of the message.
+/// @param[in] nbytes The number of bytes of message to be sent.
 /// @param[in] repeat The number of times the command is to be repeated.
-void IRsend::sendSamsungAC(const uint8_t data[], const bool shortMessage,
+void IRsend::sendSamsungAC(const uint8_t data[], const uint16_t nbytes,
                            const uint16_t repeat) {
   if (nbytes < kSamsungAcStateLength && nbytes % kSamsungAcSectionLength)
     return;  // Not an appropriate number of bytes to send a proper message.
@@ -250,26 +250,14 @@ void IRsend::sendSamsungAC(const uint8_t data[], const bool shortMessage,
     mark(kSamsungAcHdrMark);
     space(kSamsungAcHdrSpace);
     // Send in 7 byte sections.
-
-    sendGeneric(kSamsungAcSectionMark, kSamsungAcSectionSpace,
-                kSamsungAcBitMark, kSamsungAcOneSpace, kSamsungAcBitMark,
-                kSamsungAcZeroSpace, kSamsungAcBitMark, kSamsungAcSectionGap,
-                data, kSamsungAcSectionLength,                                // 7 bytes == 56 bits
-                38000, false, 0, 50);                                         // Send in LSBF order
-
-    if (!shortMessage)
+    for (uint16_t offset = 0; offset < nbytes;
+         offset += kSamsungAcSectionLength) {
       sendGeneric(kSamsungAcSectionMark, kSamsungAcSectionSpace,
                   kSamsungAcBitMark, kSamsungAcOneSpace, kSamsungAcBitMark,
                   kSamsungAcZeroSpace, kSamsungAcBitMark, kSamsungAcSectionGap,
-                  data + kSamsungAcSectionLength, kSamsungAcSectionLength,    // 7 bytes == 56 bits
-                  38000, false, 0, 50);                                       // Send in LSBF order
-                
-    sendGeneric(kSamsungAcSectionMark, kSamsungAcSectionSpace,
-                kSamsungAcBitMark, kSamsungAcOneSpace, kSamsungAcBitMark,
-                kSamsungAcZeroSpace, kSamsungAcBitMark, kSamsungAcSectionGap,
-                data + kSamsungAcSectionLength * 2, kSamsungAcSectionLength,  // 7 bytes == 56 bits
-                38000, false, 0, 50);                                         // Send in LSBF order
-
+                  data + offset, kSamsungAcSectionLength,  // 7 bytes == 56 bits
+                  38000, false, 0, 50);                    // Send in LSBF order
+    }
     // Complete made up guess at inter-message gap.
     space(kDefaultMessageGap - kSamsungAcSectionGap);
   }
@@ -369,7 +357,10 @@ void IRSamsungAc::checksum(void) {
 ///   i.e. When the device is already running.
 void IRSamsungAc::send(const uint16_t repeat, const bool calcchecksum) {
   if (calcchecksum) checksum();
-  _irsend.sendSamsungAC(_.raw, getPower() != _lastsentpowerstate || _forcepower, repeat);
+  if (getPower() != _lastsentpowerstate || _forcepower)
+    _irsend.sendSamsungAC(_.raw, kSamsungAcExtendedStateLength, repeat);
+  else
+    _irsend.sendSamsungAC(getRaw(), kSamsungAcStateLength, repeat);
   _lastsentpowerstate = getPower();  // Remember the last power state sent.
   _forcepower = false;  // It has now been sent, so clear the flag if set.
 }
@@ -377,25 +368,33 @@ void IRSamsungAc::send(const uint16_t repeat, const bool calcchecksum) {
 
 /// Get a PTR to the internal state/code for this protocol.
 /// @return PTR to a code for this protocol based on the current internal state.
-uint8_t *IRSamsungAc::getRaw(void) {
+uint8_t *IRSamsungAc::getExtendedRaw(void) {
   checksum();
   return _.raw;
+}
+/// Get a PTR to the internal state/code for this protocol.
+/// @return PTR to a code for this protocol based on the current internal state.
+uint8_t *IRSamsungAc::getRaw(void) {
+  checksum();
+  std::memcpy(shortRaw, _.raw, kSamsungAcSectionLength);
+  std::memcpy(shortRaw + kSamsungAcSectionLength, _.raw + (kSamsungAcSectionLength * 2), kSamsungAcSectionLength);
+  return shortRaw;
 }
 
 /// Set the internal state from a valid code for this protocol.
 /// @param[in] new_code A valid code for this protocol.
 /// @param[in] length The length/size of the new_code array.
 void IRSamsungAc::setRaw(const uint8_t new_code[], const uint16_t length) {
-  //TODO split in section 1 and 3
-
-  if (length > kSamsungAcSectionLength) {
-    std::memcpy(_.raw, new_code, std::min(length, kSamsungAcExtendedStateLength));
+  if (length > kSamsungAcStateLength) {
+    std::memcpy(_.raw, new_code, std::min(length,
+                                          kSamsungAcExtendedStateLength));
     return;
   }
 
-  std::memcpy(_.raw, new_code, std::min(length, kSamsungAcStateLength));
-  std::memcpy(_.raw + 2 * kSamsungAcStateLength, new_code + kSamsungAcStateLength,
-              std::min(length - kSamsungAcStateLength, kSamsungAcStateLength));
+  std::memcpy(_.raw, new_code, std::min(length, 
+                                        kSamsungAcSectionLength));
+  std::memcpy(_.raw + (kSamsungAcSectionLength * 2), new_code + kSamsungAcSectionLength, 
+                          std::min(uint16_t(length - kSamsungAcSectionLength), kSamsungAcSectionLength));
 }
 
 /// Set the requested power state of the A/C to on.
@@ -524,13 +523,12 @@ void IRSamsungAc::setClean(const bool on) {
 /// Get the Quiet setting of the A/C.
 /// @return true, the setting is on. false, the setting is off.
 bool IRSamsungAc::getQuiet(void) const {
-  return !_.Quiet1 && _.Quiet5;
+  return _.Quiet5;
 }
 
 /// Set the Quiet setting of the A/C.
 /// @param[in] on true, the setting is on. false, the setting is off.
 void IRSamsungAc::setQuiet(const bool on) {
-  _.Quiet1 = !on;  // Cleared when on.
   _.Quiet5 = on;
   if (on) {
     // Quiet mode seems to set fan speed to auto.
@@ -568,7 +566,7 @@ void IRSamsungAc::setPowerful(const bool on) {
 /// @return true, the setting is on. false, the setting is off.
 /// @see https://github.com/crankyoldgit/IRremoteESP8266/issues/1062
 bool IRSamsungAc::getBreeze(void) const {
-  return (_.Breeze == kSamsungAcBreezeOn) &&
+  return (_.Powerful10 == kSamsungAcBreezeOn) &&
          (_.Fan == kSamsungAcFanAuto && !getSwing());
 }
 
@@ -577,7 +575,7 @@ bool IRSamsungAc::getBreeze(void) const {
 /// @see https://github.com/crankyoldgit/IRremoteESP8266/issues/1062
 void IRSamsungAc::setBreeze(const bool on) {
   uint8_t off_value = getPowerful() ? kSamsungAcPowerful10On : 0b000;
-  _.Breeze = (on ? kSamsungAcBreezeOn : off_value);
+  _.Powerful10 = (on ? kSamsungAcBreezeOn : off_value);
   if (on) {
     setFan(kSamsungAcFanAuto);
     setSwing(false);

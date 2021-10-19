@@ -64,14 +64,14 @@ union SamsungProtocol{
     uint8_t Power6      :2;
     uint8_t             :2;
 
-    // 3rd Section
+    // 2nd Section
     // Byte 7
     uint8_t             :8;
     // Byte 8
     uint8_t             :4;
-    uint8_t Sum3Lower   :4;
+    uint8_t Sum2Lower   :4;
     // Byte 9
-    uint8_t Sum3Upper   :4;
+    uint8_t Sum2Upper   :4;
     uint8_t             :4;
     // Byte 10
     uint8_t             :8;
@@ -82,9 +82,9 @@ union SamsungProtocol{
     // Byte 13
     uint8_t             :8;
 
-    // 3nd Section
+    // 3rd Section
     // Byte 14
-    uint8_t :8;
+    uint8_t             :8;
     // Byte 15
     uint8_t Powerful8   :4;
     uint8_t Sum3Lower   :4;
@@ -185,6 +185,7 @@ class IRSamsungAc {
   void setIon(const bool on);
   bool getIon(void) const;
   uint8_t* getRaw(void);
+  uint8_t* getExtendedRaw(void);
   void setRaw(const uint8_t new_code[],
               const uint16_t length = kSamsungAcStateLength);
   static uint8_t calcSectionChecksum(const uint8_t *section);
@@ -207,6 +208,8 @@ class IRSamsungAc {
   /// @endcond
 #endif  // UNIT_TEST
   SamsungProtocol _;
+  uint8_t shortRaw[kSamsungAcStateLength];
+  
   bool _forcepower;  ///< Hack to know when we need to send a special power mesg
   bool _lastsentpowerstate;
   void checksum(void);
