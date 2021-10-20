@@ -287,7 +287,9 @@ void IRSamsungAc::stateReset(const bool forcepower, const bool initialPower) {
   switch(_model) {
     case samsung_ac_remote_model_t::kSamsungAREH03E:
       _.raw[19] = 0x01;
-      return;
+      break;
+    default:
+      break;
   }
   _forcepower = forcepower;
   _lastsentpowerstate = initialPower;
@@ -421,7 +423,9 @@ void IRSamsungAc::setPower(const bool on) {
   switch(_model) {
     case samsung_ac_remote_model_t::kSamsungAREH03E:
       _.Power20 = _.Power6;
-      return;
+      break;
+    default:
+      break;
   }
 }
 
@@ -526,14 +530,14 @@ void IRSamsungAc::setBeep(const bool on) {
 /// Get the Clean setting of the A/C.
 /// @return true, the setting is on. false, the setting is off.
 bool IRSamsungAc::getClean(void) const {
-  return _.Clean10 && _.Clean11;
+  return _.Clean17 && _.Clean18;
 }
 
 /// Set the Clean setting of the A/C.
 /// @param[in] on true, the setting is on. false, the setting is off.
 void IRSamsungAc::setClean(const bool on) {
-  _.Clean10 = on;
-  _.Clean11 = on;
+  _.Clean17 = on;
+  _.Clean18 = on;
 }
 
 /// Get the Quiet setting of the A/C.
@@ -556,8 +560,8 @@ void IRSamsungAc::setQuiet(const bool on) {
 /// Get the Powerful (Turbo) setting of the A/C.
 /// @return true, the setting is on. false, the setting is off.
 bool IRSamsungAc::getPowerful(void) const {
-  return !(_.Powerful8 & kSamsungAcPowerfulMask8) &&
-         (_.Powerful10 == kSamsungAcPowerful10On) &&
+  return !(_.Powerful15 & kSamsungAcPowerfulMask8) &&
+         (_.Powerful17 == kSamsungAcPowerful17On) &&
          (_.Fan == kSamsungAcFanTurbo);
 }
 
@@ -565,14 +569,14 @@ bool IRSamsungAc::getPowerful(void) const {
 /// @param[in] on true, the setting is on. false, the setting is off.
 void IRSamsungAc::setPowerful(const bool on) {
   uint8_t off_value = getBreeze() ? kSamsungAcBreezeOn : 0b000;
-  _.Powerful10 = (on ? kSamsungAcPowerful10On : off_value);
+  _.Powerful17 = (on ? kSamsungAcPowerful17On : off_value);
   if (on) {
-    _.Powerful8 &= ~kSamsungAcPowerfulMask8;  // Bit needs to be cleared.
+    _.Powerful15 &= ~kSamsungAcPowerfulMask8;  // Bit needs to be cleared.
     // Powerful mode sets fan speed to Turbo.
     setFan(kSamsungAcFanTurbo);
     setQuiet(false);  // Powerful 'on' is mutually exclusive to Quiet.
   } else {
-    _.Powerful8 |= kSamsungAcPowerfulMask8;  // Bit needs to be set.
+    _.Powerful15 |= kSamsungAcPowerfulMask8;  // Bit needs to be set.
     // Turning off Powerful mode sets fan speed to Auto if we were in Turbo mode
     if (_.Fan == kSamsungAcFanTurbo) setFan(kSamsungAcFanAuto);
   }
@@ -582,7 +586,7 @@ void IRSamsungAc::setPowerful(const bool on) {
 /// @return true, the setting is on. false, the setting is off.
 /// @see https://github.com/crankyoldgit/IRremoteESP8266/issues/1062
 bool IRSamsungAc::getBreeze(void) const {
-  return (_.Powerful10 == kSamsungAcBreezeOn) &&
+  return (_.Powerful17 == kSamsungAcBreezeOn) &&
          (_.Fan == kSamsungAcFanAuto && !getSwing());
 }
 
@@ -590,8 +594,8 @@ bool IRSamsungAc::getBreeze(void) const {
 /// @param[in] on true, the setting is on. false, the setting is off.
 /// @see https://github.com/crankyoldgit/IRremoteESP8266/issues/1062
 void IRSamsungAc::setBreeze(const bool on) {
-  uint8_t off_value = getPowerful() ? kSamsungAcPowerful10On : 0b000;
-  _.Powerful10 = (on ? kSamsungAcBreezeOn : off_value);
+  uint8_t off_value = getPowerful() ? kSamsungAcPowerful17On : 0b000;
+  _.Powerful17 = (on ? kSamsungAcBreezeOn : off_value);
   if (on) {
     setFan(kSamsungAcFanAuto);
     setSwing(false);

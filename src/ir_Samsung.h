@@ -87,7 +87,7 @@ union SamsungProtocol{
     // Byte 14
     uint8_t             :8;
     // Byte 15
-    uint8_t Powerful8   :4;
+    uint8_t Powerful15  :4;
     uint8_t Sum3Lower   :4;
     // Byte 16
     uint8_t Sum3Upper   :4;
@@ -95,13 +95,13 @@ union SamsungProtocol{
     uint8_t             :1;
     // Byte 17
     uint8_t             :1;
-    uint8_t Powerful10  :3;
+    uint8_t Powerful17  :3;
     uint8_t Display     :1;
     uint8_t             :2;
-    uint8_t Clean10     :1;
+    uint8_t Clean17     :1;
     // Byte 18
     uint8_t Ion         :1;
-    uint8_t Clean11     :1;
+    uint8_t Clean18     :1;
     uint8_t             :2;
     uint8_t Temp        :4;
     // Byte 19
@@ -122,7 +122,7 @@ union SamsungProtocol{
 const uint8_t kSamsungAcPowerfulMask8 = 0b01010000;
 const uint8_t kSamsungAcSwingMove =                0b010;
 const uint8_t kSamsungAcSwingStop =                0b111;
-const uint8_t kSamsungAcPowerful10On =                     0b011;
+const uint8_t kSamsungAcPowerful17On =                     0b011;
 const uint8_t kSamsungAcBreezeOn =                         0b101;
 const uint8_t kSamsungAcMinTemp  = 16;  // C   Mask 0b11110000
 const uint8_t kSamsungAcMaxTemp  = 30;  // C   Mask 0b11110000
