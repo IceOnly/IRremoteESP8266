@@ -418,6 +418,11 @@ void IRSamsungAc::off(void) { setPower(false); }
 /// @param[in] on true, the setting is on. false, the setting is off.
 void IRSamsungAc::setPower(const bool on) {
   _.Power6 = (on ? 0b11 : 0b00);
+  switch(_model) {
+    case samsung_ac_remote_model_t::kSamsungAREH03E:
+      _.Power20 = _.Power6;
+      return;
+  }
 }
 
 /// Get the value of the current power setting.
