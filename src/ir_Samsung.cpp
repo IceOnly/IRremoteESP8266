@@ -651,6 +651,27 @@ void IRSamsungAc::setIon(const bool on) {
   _.Ion = on;
 }
 
+/// Set the Off Timer time.
+/// @param[in] mins The time expressed as minutes past send.
+void IRSamsungAc::setOffTimer(uint16_t mins) {
+  if (_model != samsung_ac_remote_model_t::kSamsungAREH03E) return;
+  _.TimerType = 4;
+  if (mins > 1440) mins = 1440;
+
+  _.TimerDays = mins / 1440;
+  _.OffTimerH1 = (mins / 60) % 24 % 2;
+  _.OffTimerH2 = (mins / 60) % 24 >> 1;
+  _.OffTimerMin = mins % 60 / 10;
+}
+
+/// Get the Off Timer time.
+/// @return The time expressed as the Nr. of minutes past lase send.
+uint16_t IRSamsungAc::getOffTimer(void) const {
+  if (_model != samsung_ac_remote_model_t::kSamsungAREH03E) return 0;
+  if (_.TimerType != 4) return 0;
+  return _.TimerDays * 1440 + ((_.OffTimerH2 << 1) + _.OffTimerH1) * 60 +_.OffTimerMin * 10;
+}
+
 /// Convert a stdAc::opmode_t enum into its native mode.
 /// @param[in] mode The enum to be converted.
 /// @return The native equivalent of the enum.

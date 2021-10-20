@@ -1804,7 +1804,8 @@ void IRac::samsung(IRSamsungAc *ac,
                    const bool filter, const bool clean,
                    const bool beep, const bool prevpower,
                    const bool forcepower,
-                   const samsung_ac_remote_model_t model) {
+                   const samsung_ac_remote_model_t model,
+                   const int16_t offTimerMins) {
   ac->begin();
   ac->setModel(model);
   ac->stateReset(forcepower, prevpower);
@@ -1821,7 +1822,7 @@ void IRac::samsung(IRSamsungAc *ac,
   ac->setIon(filter);
   ac->setClean(clean);
   ac->setBeep(beep);
-  // No Sleep setting available.
+  if (offTimerMins > 0) ac->setOffTimer(offTimerMins);
   // No Clock setting available.
   // Do setMode() again as it can affect fan speed.
   ac->setMode(ac->convertMode(mode));

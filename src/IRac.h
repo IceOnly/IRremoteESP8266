@@ -401,7 +401,8 @@ void electra(IRElectraAc *ac,
                const bool filter, const bool clean,
                const bool beep, const bool prevpower = true,
                const bool forcepower = true, 
-               const samsung_ac_remote_model_t model = samsung_ac_remote_model_t::kSamsungGeneric);
+               const samsung_ac_remote_model_t model = samsung_ac_remote_model_t::kSamsungGeneric,
+               const int16_t offTimerMins = 0);
 #endif  // SEND_SAMSUNG_AC
 #if SEND_SANYO_AC
   void sanyo(IRSanyoAc *ac,

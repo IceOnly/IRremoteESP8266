@@ -73,13 +73,16 @@ union SamsungProtocol{
     uint8_t Sum2Lower   :4;
     // Byte 9
     uint8_t Sum2Upper   :4;
-    uint8_t             :4;
+    uint8_t OffTimerMin :2;
+    uint8_t             :1;
+    uint8_t OffTimerH1  :1;
     // Byte 10
-    uint8_t             :8;
+    uint8_t OffTimerH2  :8;
     // Byte 11
     uint8_t             :8;
     // Byte 12
-    uint8_t             :8;
+    uint8_t TimerType   :4;
+    uint8_t TimerDays   :4;
     // Byte 13
     uint8_t             :8;
 
@@ -190,6 +193,8 @@ class IRSamsungAc {
   bool getDisplay(void) const;
   void setIon(const bool on);
   bool getIon(void) const;
+  void setOffTimer(uint16_t mins);
+  uint16_t getOffTimer(void) const;
   uint8_t* getRaw(void);
   uint8_t* getExtendedRaw(void);
   void setRaw(const uint8_t new_code[],
