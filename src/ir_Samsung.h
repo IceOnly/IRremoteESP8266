@@ -84,9 +84,10 @@ union SamsungProtocol{
     uint8_t Mode  :3;
     uint8_t       :1;
     // Byte 13
+    uint8_t             :1;
     uint8_t FilterReset :1;
     uint8_t Beep        :1;
-    uint8_t             :2;
+    uint8_t             :1;
     uint8_t Power13     :2;
     uint8_t             :2;
   };
