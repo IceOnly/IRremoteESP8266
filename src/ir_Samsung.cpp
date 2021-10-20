@@ -284,6 +284,11 @@ void IRSamsungAc::stateReset(const bool forcepower, const bool initialPower) {
       0x01, 0xD2, 0x0F, 0x00, 0x00, 0x00, 0x00,
       0x01, 0x02, 0xAE, 0x71, 0x00, 0x15, 0xF0};
   std::memcpy(_.raw, kReset, kSamsungAcExtendedStateLength);
+  switch(_model) {
+    case samsung_ac_remote_model_t::kSamsungAREH03E:
+      _.raw[19] = 0x01;
+      return;
+  }
   _forcepower = forcepower;
   _lastsentpowerstate = initialPower;
   setPower(initialPower);
