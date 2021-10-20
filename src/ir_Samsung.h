@@ -113,7 +113,7 @@ union SamsungProtocol{
     uint8_t             :1;
     uint8_t Byte20Bit2  :1; // Generic: Beep, AR-EH03E: FilterReset 
     uint8_t Byte20Bit3  :1; // AR-EH03E: Beep
-    uint8_t             :2;
+    uint8_t             :1;
     uint8_t Power20     :2;
     uint8_t             :2;
   };

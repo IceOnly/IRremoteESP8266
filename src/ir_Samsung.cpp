@@ -541,7 +541,7 @@ void IRSamsungAc::setBeep(const bool on) {
     switch(_model)
   {
     case samsung_ac_remote_model_t::kSamsungAREH03E:
-      _.Byte20Bit3 = on;
+     _.Byte20Bit3 = on;
       break;
     default:
       _.Byte20Bit2 = on;

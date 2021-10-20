@@ -462,12 +462,24 @@ TEST(TestIRSamsungAcClass, SetAndGetBeep) {
   IRSamsungAc ac(kGpioUnused);
   ac.setBeep(false);
   EXPECT_FALSE(ac.getBeep());
+  EXPECT_EQ(ac.getExtendedRaw()[20], 0xF0);
   ac.setBeep(true);
   EXPECT_TRUE(ac.getBeep());
+  EXPECT_EQ(ac.getExtendedRaw()[20], 0xF2);
   ac.setBeep(false);
   EXPECT_FALSE(ac.getBeep());
   ac.setBeep(true);
   EXPECT_TRUE(ac.getBeep());
+  ac.setBeep(false);
+
+  ac.setModel(samsung_ac_remote_model_t::kSamsungAREH03E);
+  ac.setBeep(true);
+  EXPECT_TRUE(ac.getBeep());
+  EXPECT_EQ(ac.getExtendedRaw()[20], 0xF4);
+
+  ac.setBeep(false);
+  EXPECT_FALSE(ac.getBeep());
+  EXPECT_EQ(ac.getExtendedRaw()[20], 0xF0);
 }
 
 TEST(TestIRSamsungAcClass, SetAndGetDisplay) {
