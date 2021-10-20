@@ -1684,3 +1684,71 @@ TEST(TestIRSamsungAcClass, SectionChecksums) {
   EXPECT_EQ(IRSamsungAc::getSectionChecksum(extended_off + 14),
             IRSamsungAc::calcSectionChecksum(extended_off + 14));
 }
+
+TEST(TestIRSamsungAcClass, AREH03EAutoEncodeSample) {
+  IRSamsungAc ac(0);
+  ac.setModel(samsung_ac_remote_model_t::kSamsungAREH03E);
+  ac.setPower(true);
+  ac.setMode(kSamsungAcAuto);
+  ac.setTemp(21);
+  ac.setFan(kSamsungAcFanAuto);
+  ac.setSwing(true);
+  ac.setBeep(false);
+  ac.setClean(false);
+  ac.setQuiet(false);
+  ac.setDisplay(true);
+  ac.setIon(false);
+
+    // Extended (21 bytes)
+  const uint8_t extended_on[kSamsungAcExtendedStateLength] = {
+      0x02, 0x92, 0x0F, 0x00, 0x00, 0x00, 0xF0,
+      0x01, 0xD2, 0x0F, 0x00, 0x00, 0x00, 0x00,
+      0x01, 0x02, 0xAF, 0x71, 0x50, 0x01, 0xF0};
+
+  EXPECT_STATE_EQ(extended_on, ac.getExtendedRaw(), kSamsungAcExtendedBits);
+}
+
+TEST(TestIRSamsungAcClass, AREH03EPowerOffEncodeSample) {
+  IRSamsungAc ac(0);
+  ac.setModel(samsung_ac_remote_model_t::kSamsungAREH03E);
+  ac.setPower(false);
+  ac.setMode(kSamsungAcHeat);
+  ac.setTemp(21);
+  ac.setFan(kSamsungAcFanAuto);
+  ac.setSwing(false);
+  ac.setBeep(false);
+  ac.setClean(false);
+  ac.setQuiet(false);
+  ac.setDisplay(true);
+  ac.setIon(false);
+
+    // Extended (21 bytes)
+  const uint8_t extended_on[kSamsungAcExtendedStateLength] = {
+      0x02, 0xB2, 0x0F, 0x00, 0x00, 0x00, 0xC0,
+      0x01, 0xD2, 0x0F, 0x00, 0x00, 0x00, 0x00,
+      0x01, 0xF2, 0xFE, 0x71, 0x50, 0x41, 0xC0};
+
+  EXPECT_STATE_EQ(extended_on, ac.getExtendedRaw(), kSamsungAcExtendedBits);
+}
+
+TEST(TestIRSamsungAcClass, AREH03EBeepOnEncodeSample) {
+  IRSamsungAc ac(0);
+  ac.setModel(samsung_ac_remote_model_t::kSamsungAREH03E);
+  ac.setPower(true);
+  ac.setMode(kSamsungAcFan);
+  ac.setTemp(24);
+  ac.setFan(kSamsungAcFanHigh);
+  ac.setSwing(false);
+  ac.setBeep(true);
+  ac.setClean(false);
+  ac.setQuiet(false);
+  ac.setDisplay(true);
+  ac.setIon(false);
+
+    // Short (14 bytes)
+  const uint8_t extended_on[kSamsungAcExtendedStateLength] = {
+      0x02, 0x92, 0x0F, 0x00, 0x00, 0x00, 0xF0,
+      0x01, 0xA2, 0xFE, 0x71, 0x80, 0x3B, 0xF4};
+
+  EXPECT_STATE_EQ(extended_on, ac.getRaw(), kSamsungAcBits);
+}

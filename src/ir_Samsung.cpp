@@ -486,6 +486,9 @@ uint8_t IRSamsungAc::getMode(void) const {
 void IRSamsungAc::setFan(const uint8_t speed) {
   switch (speed) {
     case kSamsungAcFanAuto:
+      if (_model != samsung_ac_remote_model_t::kSamsungAREH03E &&
+        _.Mode == kSamsungAcAuto) return;  // Not valid in Auto mode.
+      break;
     case kSamsungAcFanLow:
     case kSamsungAcFanMed:
     case kSamsungAcFanHigh:
