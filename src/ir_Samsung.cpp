@@ -463,6 +463,8 @@ void IRSamsungAc::setMode(const uint8_t mode) {
   if (newmode > kSamsungAcHeat) newmode = kSamsungAcAuto;
   _.Mode = newmode;
 
+  if (_model == samsung_ac_remote_model_t::kSamsungAREH03E) return;
+
   // Auto mode has a special fan setting valid only in auto mode.
   if (newmode == kSamsungAcAuto) {
     _.Fan = kSamsungAcFanAuto2;
