@@ -111,7 +111,8 @@ union SamsungProtocol{
     uint8_t             :1;
     // Byte 20
     uint8_t             :1;
-    uint8_t Beep        :1;
+    uint8_t Byte20Bit2  :1;
+    uint8_t Byte20Bit3  :1;
     uint8_t             :2;
     uint8_t Power20     :2;
     uint8_t             :2;

@@ -518,13 +518,27 @@ void IRSamsungAc::setSwing(const bool on) {
 /// Get the Beep setting of the A/C.
 /// @return true, the setting is on. false, the setting is off.
 bool IRSamsungAc::getBeep(void) const {
-  return _.Beep;
+  switch(_model)
+  {
+    case samsung_ac_remote_model_t::kSamsungAREH03E:
+      return _.Byte20Bit3;
+    default:
+      return _.Byte20Bit2;
+  }
 }
 
 /// Set the Beep setting of the A/C.
 /// @param[in] on true, the setting is on. false, the setting is off.
 void IRSamsungAc::setBeep(const bool on) {
-  _.Beep = on;
+    switch(_model)
+  {
+    case samsung_ac_remote_model_t::kSamsungAREH03E:
+      _.Byte20Bit3 = on;
+      break;
+    default:
+      _.Byte20Bit2 = on;
+      break;
+  }
 }
 
 /// Get the Clean setting of the A/C.
@@ -695,7 +709,7 @@ stdAc::state_t IRSamsungAc::toCommon(void) const {
   result.quiet = getQuiet();
   result.turbo = getPowerful();
   result.clean = getClean();
-  result.beep = _.Beep;
+  result.beep = getBeep();
   result.light = _.Display;
   result.filter = _.Ion;
   // Not supported.
@@ -741,7 +755,7 @@ String IRSamsungAc::toString(void) const {
   }
   result += ')';
   result += addBoolToString(getSwing(), kSwingStr);
-  result += addBoolToString(_.Beep, kBeepStr);
+  result += addBoolToString(getBeep(), kBeepStr);
   result += addBoolToString(getClean(), kCleanStr);
   result += addBoolToString(getQuiet(), kQuietStr);
   result += addBoolToString(getPowerful(), kPowerfulStr);
