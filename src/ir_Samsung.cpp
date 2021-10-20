@@ -292,6 +292,12 @@ void IRSamsungAc::stateReset(const bool forcepower, const bool initialPower) {
 /// Set up hardware to be able to send a message.
 void IRSamsungAc::begin(void) { _irsend.begin(); }
 
+/// Set the model of the A/C to emulate.
+/// @param[in] model The enum of the appropriate model.
+void IRSamsungAc::setModel(const samsung_ac_remote_model_t model) {
+  _model = model;
+}
+
 /// Get the existing checksum for a given state section.
 /// @param[in] section The array to extract the checksum from.
 /// @return The existing checksum value.

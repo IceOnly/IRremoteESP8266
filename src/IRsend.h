@@ -153,6 +153,12 @@ enum panasonic_ac_remote_model_t {
   kPanasonicRkr = 6,
 };
 
+/// Samsung A/C model numbers
+enum samsung_ac_remote_model_t {
+  kSamsungGeneric = 0,
+  kSamsungAREH03E = 1,
+};
+
 /// Sharp A/C model numbers
 enum sharp_ac_remote_model_t {
   A907 = 1,

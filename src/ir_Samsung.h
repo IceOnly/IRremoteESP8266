@@ -158,6 +158,7 @@ class IRSamsungAc {
   int8_t calibrate(void) { return _irsend.calibrate(); }
 #endif  // SEND_SAMSUNG_AC
   void begin(void);
+  void setModel(const samsung_ac_remote_model_t model);
   void on(void);
   void off(void);
   void setPower(const bool on);
@@ -208,6 +209,7 @@ class IRSamsungAc {
   /// @endcond
 #endif  // UNIT_TEST
   SamsungProtocol _;
+  samsung_ac_remote_model_t _model;  ///< Saved copy of the model.
   uint8_t shortRaw[kSamsungAcStateLength];
   
   bool _forcepower;  ///< Hack to know when we need to send a special power mesg
