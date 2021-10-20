@@ -1372,6 +1372,7 @@ TEST(TestIRSamsungAcClass, Issue604SendPowerHack) {
 
 TEST(TestIRSamsungAcClass, toCommon) {
   IRSamsungAc ac(0);
+  ac.setModel(samsung_ac_remote_model_t::kSamsungGeneric);
   ac.setPower(true);
   ac.setMode(kSamsungAcCool);
   ac.setTemp(20);
@@ -1384,7 +1385,7 @@ TEST(TestIRSamsungAcClass, toCommon) {
   ac.setIon(true);
   // Now test it.
   ASSERT_EQ(decode_type_t::SAMSUNG_AC, ac.toCommon().protocol);
-  ASSERT_EQ(-1, ac.toCommon().model);
+  ASSERT_EQ(samsung_ac_remote_model_t::kSamsungGeneric, ac.toCommon().model);
   ASSERT_TRUE(ac.toCommon().power);
   ASSERT_TRUE(ac.toCommon().celsius);
   ASSERT_EQ(20, ac.toCommon().degrees);

@@ -305,6 +305,12 @@ void IRSamsungAc::setModel(const samsung_ac_remote_model_t model) {
   _model = model;
 }
 
+/// Get/Detect the model of the A/C.
+/// @return The enum of the compatible model.
+samsung_ac_remote_model_t IRSamsungAc::getModel() const {
+  return _model;
+}
+
 /// Get the existing checksum for a given state section.
 /// @param[in] section The array to extract the checksum from.
 /// @return The existing checksum value.
@@ -698,7 +704,7 @@ stdAc::fanspeed_t IRSamsungAc::toCommonFanSpeed(const uint8_t spd) {
 stdAc::state_t IRSamsungAc::toCommon(void) const {
   stdAc::state_t result;
   result.protocol = decode_type_t::SAMSUNG_AC;
-  result.model = -1;  // Not supported.
+  result.model = getModel();
   result.power = getPower();
   result.mode = toCommonMode(_.Mode);
   result.celsius = true;

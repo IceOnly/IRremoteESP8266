@@ -163,6 +163,7 @@ class IRSamsungAc {
 #endif  // SEND_SAMSUNG_AC
   void begin(void);
   void setModel(const samsung_ac_remote_model_t model);
+  samsung_ac_remote_model_t getModel() const;
   void on(void);
   void off(void);
   void setPower(const bool on);
